@@ -17,7 +17,7 @@ public class Test {
 
     private static void clean() throws IOException {
         Path filePath = Paths.get(outputFileName);
-        Files.delete(filePath);
+        Files.deleteIfExists(filePath);
     }
 
     private static void download() throws IOException {
