@@ -14,6 +14,8 @@ public class Test {
 
     private static final String outputFileName = "A.zip";
     private static final String smbUrl = "smb://192.168.35.7/C/A.zip";
+    private static final String username = "vagrant";
+    private static final String password = "vagrant";
 
     private static void clean() throws IOException {
         Path filePath = Paths.get(outputFileName);
@@ -21,13 +23,19 @@ public class Test {
     }
 
     private static void download() throws IOException {
-        NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("?", "vagrant", "vagrant");
-        SmbFile file = new SmbFile(smbUrl, auth);
-        InputStream is = file.getInputStream();
-        OutputStream os = new FileOutputStream(outputFileName);
-        IOUtils.copyLarge(is, os);
-        IOUtils.closeQuietly(is);
-        IOUtils.closeQuietly(os);
+        InputStream is = null;
+        OutputStream os = null;
+
+        try {
+            NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("?", username, password);
+            SmbFile file = new SmbFile(smbUrl, auth);
+            is = file.getInputStream();
+            os = new FileOutputStream(outputFileName);
+            IOUtils.copyLarge(is, os);
+        } catch (Exception e) {
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(os);
+        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -37,6 +45,6 @@ public class Test {
         download();
         long end = System.currentTimeMillis();
 
-        System.out.println("Downloaded in " + (end - start) / 1000 + "s");
+        System.out.println("File has been downloaded in " + ((end - start) / 1000) + "s");
     }
 }
